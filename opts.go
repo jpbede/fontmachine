@@ -1,4 +1,4 @@
-package machinery
+package fontmachine
 
 func WithFontPath(path string) func(*FontMachinery) {
 	return func(machinery *FontMachinery) {

@@ -3,13 +3,13 @@ package main
 import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
-	"github.com/jpbede/fontmachine/machinery"
+	"github.com/jpbede/fontmachine"
 	"net/http"
 	"strings"
 )
 
 func main() {
-	fm := machinery.NewFontMachinery(machinery.WithFontPath("./fonts"))
+	fm := fontmachine.NewFontMachinery(fontmachine.WithFontPath("./fonts"))
 	router := gin.Default()
 	router.GET("/:fontstack/:range", func(context *gin.Context) {
 		fontstack := context.Param("fontstack")

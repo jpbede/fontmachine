@@ -1,5 +1,5 @@
 // Package machinery contains all necessary functions for generating a SDF PBF
-package machinery
+package fontmachine
 
 import (
 	"fmt"
