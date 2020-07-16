@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -15,7 +16,7 @@ func main() {
 		Name:  "fontmachined",
 		Usage: "serve SDF font glyphs on-the-fly",
 		Action: func(c *cli.Context) error {
-			fm := machinery.NewFontMachinery(machinery.WithFontPath(c.String("path")))
+			fm := machinery.NewFontMachinery(machinery.WithFontPath(c.String("path")), machinery.WithFontSize(24))
 			router := gin.Default()
 			router.GET("/:fontstack/:range", func(context *gin.Context) {
 				fontstack := context.Param("fontstack")
@@ -24,6 +25,7 @@ func main() {
 				if err != nil {
 					context.String(http.StatusInternalServerError, "a error occurred")
 				} else {
+					context.Header("Content-Length", strconv.Itoa(len(pbf)))
 					context.Data(http.StatusOK, "application/x-protobuf", pbf)
 				}
 			})

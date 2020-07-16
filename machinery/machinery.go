@@ -2,16 +2,20 @@
 package machinery
 
 import (
-	"fmt"
 	"github.com/go-courier/fontnik"
 	"github.com/golang/freetype/truetype"
 	"github.com/golang/protobuf/proto"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
 
 type FontMachinery struct {
 	FontPath string
+	fontSize float64
+
+	foundFonts map[string]string
 }
 
 // NewFontMachinery creates a new FontMachinery
@@ -20,7 +24,43 @@ func NewFontMachinery(opts ...func(*FontMachinery)) *FontMachinery {
 	for _, optFunc := range opts {
 		optFunc(machinery)
 	}
+
+	machinery.ScanFontDirectory()
+
 	return machinery
+}
+
+// GetAvailableFonts returns a list of available fonts
+func (fm *FontMachinery) GetAvailableFonts() {
+
+}
+
+// ScanFontDirectory scans the given font directory to find all fonts
+func (fm *FontMachinery) ScanFontDirectory() {
+	if fm.foundFonts == nil {
+		fm.foundFonts = make(map[string]string)
+	}
+
+	fileList := []string{}
+	filepath.Walk(fm.FontPath, func(path string, f os.FileInfo, err error) error {
+		ext := filepath.Ext(path)
+		if ext == ".ttf" || ext == ".otf" {
+			fileList = append(fileList, path)
+		}
+		return nil
+	})
+
+	for _, file := range fileList {
+		if font, err := readFont(file); err == nil {
+			fontName := font.Name(truetype.NameIDFontFullName)
+			// the regular fonts doesn't have the "Regular" part in their name
+			// but this is needed so add it
+			if strings.Contains(file, "Regular") {
+				fontName += " Regular"
+			}
+			fm.foundFonts[fontName] = file
+		}
+	}
 }
 
 // ComposeFontstack loads and generates a PBF of given fontstack
@@ -44,7 +84,8 @@ func (fm *FontMachinery) ComposeByFontNames(fontNames []string, min, max int) ([
 
 	// loop all names, read and parse the fonts
 	for _, fontName := range fontNames {
-		font, readError := readFont(fmt.Sprintf("%s/%s.ttf", fm.FontPath, strings.TrimSpace(fontName)))
+		fontPath := fm.foundFonts[fontName]
+		font, readError := readFont(fontPath)
 		if readError != nil {
 			return nil, readError
 		}
@@ -58,8 +99,15 @@ func (fm *FontMachinery) ComposeByFontNames(fontNames []string, min, max int) ([
 func (fm *FontMachinery) ComposeByFonts(fonts []*truetype.Font, min, max int) ([]byte, error) {
 	result := fontnik.Glyphs{}
 
+	var opts fontnik.SDFBuilderOpt
+	if fm.fontSize > 0 {
+		opts = fontnik.SDFBuilderOpt{
+			FontSize: fm.fontSize,
+		}
+	}
+
 	for _, font := range fonts {
-		builder := fontnik.NewSDFBuilder(font)
+		builder := fontnik.NewSDFBuilder(font, opts)
 		glyphs := builder.Glyphs(min, max)
 		result.Stacks = append(result.Stacks, glyphs.Stacks...)
 	}

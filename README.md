@@ -17,4 +17,19 @@ When you want to run Fontmachine with docker, use the following command:
 Place all font files (ttf) in a folder and replace `{font path}` in the above command with the path.
 
 ### Hosted
-_Coming soon_
+I provide a hosted version of Fontmachine, which is reachable at `use.fontmachine.io`
+
+If you want to use this just replace your glyph path with `https://use.fontmachine.io/{fontstack}/{range}.pbf`
+
+#### Available fonts
+- All Roboto fonts
+- All Open Sans fonts
+- All Noto fonts
+
+#### Usage policy
+This kind of service is being provided with best effort. Be kind and do not stress this service.
+I will ratelimit the requests if needed. 
+
+Please contact me before using this service in a large manner.
+
+I would be happy if you would sponsor to keep this service running.
