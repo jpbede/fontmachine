@@ -1,4 +1,4 @@
-package fontmachine
+package machinery
 
 import (
 	"github.com/golang/freetype/truetype"
