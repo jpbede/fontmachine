@@ -1,6 +1,6 @@
 # Fontmachine
 [![](https://godoc.org/github.com/jpbede/fontmachine?status.svg)](http://godoc.org/github.com/jpbede/fontmachine)
-![Docker Build Status](https://img.shields.io/docker/build/jpbe/fontmachine)
+[![](https://img.shields.io/docker/cloud/build/jpbe/fontmachine)](https://hub.docker.com/r/jpbe/fontmachine)
 
 A small library and server to generate SDF font glyphs, written in Golang.
 
